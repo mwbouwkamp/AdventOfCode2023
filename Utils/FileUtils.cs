@@ -1,16 +1,15 @@
 ﻿namespace AdventOfCode2023;
 
-internal class FileUtils
+public class FileUtils
 {
     private static readonly String rootFolder = @"C:\Users\Marco.Bouwkamp\Documents\High code\AdventOfCode2023\Resources\";
-    private readonly string fileName;
+    private readonly string path;
 
     public FileUtils(String fileName)
     {
-        if (!File.Exists(fileName.Trim()))
-            throw new FileNotFoundException($"File does not exist: {rootFolder}{fileName}");
-
-        this.fileName = fileName.Trim();
+        path = rootFolder + fileName;
+        if (!File.Exists(path))
+            throw new FileNotFoundException($"File does not exist: {path}");
     }
 
     /// <summary>Gets lines.</summary>
@@ -19,7 +18,7 @@ internal class FileUtils
     /// </returns>
     public List<String> GetLines()
     {
-        return File.ReadLines(fileName).ToList();
+        return File.ReadLines(path).ToList();
     }
 
     /// <summary>Gets strings, using a delimiter.</summary>
@@ -27,11 +26,9 @@ internal class FileUtils
     /// <returns>
     ///   List of strings.
     /// </returns>
-    public List<String> GetString(String delimiter)
+    public String GetString()
     {
-        return File.ReadAllText(fileName)
-            .Split(delimiter)
-            .ToList();
+        return File.ReadAllText(path);
     }
 
     /// <summary>Gets characters as string, using a delimiter.</summary>
@@ -41,7 +38,7 @@ internal class FileUtils
     /// </returns>
     public List<String> GetCharactersAsString(String? delimiter = "")
     {
-        return File.ReadAllText(fileName)
+        return File.ReadAllText(path)
             .Split(delimiter)
             .ToList();
     }
@@ -86,7 +83,7 @@ internal class FileUtils
     /// </returns>
     private List<T> GetParsedElements<T>(String delimiter, Func<string, T> parser)
     {
-        return File.ReadAllText(fileName)
+        return File.ReadAllText(path)
             .Split(delimiter)
             .Select(element => parser(element))
             .ToList();
@@ -119,7 +116,7 @@ internal class FileUtils
     /// <returns>
     ///   List of lists of elements of type T.
     /// </returns>
-    public List<List<T>> Get2DList<T>(String delimiter, Func<string, T> parser)
+    private List<List<T>> Get2DList<T>(String delimiter, Func<string, T> parser)
     {
         return GetLines()
             .Select(line => line

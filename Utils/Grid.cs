@@ -1,8 +1,8 @@
 ﻿namespace AdventOfCode2023;
 
-internal class Grid<T>
+public class Grid<T>
 {
-    private readonly List<List<T>> grid;
+    private List<List<T>> grid;
 
     public Grid(List<List<T>> grid) 
     {
