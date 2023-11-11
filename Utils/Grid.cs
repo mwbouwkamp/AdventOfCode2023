@@ -60,6 +60,14 @@ public class Grid<T>
         return ListToString(rowsAsStrings);
     }
 
+    /// <summary>Lists to string, concatenating all values and adding optional prefix and suffix.</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list">The list.</param>
+    /// <param name="prefix">The prefix.</param>
+    /// <param name="suffix">The suffix.</param>
+    /// <returns>
+    ///   String concatenating all values in the list and adding optional prefix and suffix.
+    /// </returns>
     private static string ListToString<T>(List<T> list, string prefix = "", string suffix = "")
     {
         return prefix + list.Aggregate(new StringBuilder(), (a, b) => a.Append(b)) + suffix;
