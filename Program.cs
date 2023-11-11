@@ -1,3 +1,3 @@
 ﻿using AdventOfCode2023;
 
-Day01 day01 = new();
+Console.WriteLine(new Day01().ExecuteA());
