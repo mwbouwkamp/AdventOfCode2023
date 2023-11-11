@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using System.Text;
+
+namespace AdventOfCode2023;
 
 public class Grid<T>
 {
@@ -14,7 +16,6 @@ public class Grid<T>
         }
     }
     public int Height { get; }
-
 
     public Grid(List<List<T>> grid) 
     {
@@ -51,5 +52,16 @@ public class Grid<T>
     /// <param name="value">The value to set.</param>
     public void SetElement(int row, int col, T value) {
         grid[row][col] = value;
+    }
+
+    public override string ToString()
+    {
+        List<string> rowsAsStrings = grid.Select(row => ListToString(row, suffix: "\n")).ToList();
+        return ListToString(rowsAsStrings);
+    }
+
+    private static string ListToString<T>(List<T> list, string prefix = "", string suffix = "")
+    {
+        return prefix + list.Aggregate(new StringBuilder(), (a, b) => a.Append(b)) + suffix;
     }
 }
