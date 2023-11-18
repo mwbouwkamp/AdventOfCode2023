@@ -1,18 +1,16 @@
 ﻿namespace AdventOfCode2023;
 
-internal class Day01
+public class Day01 : Day
 {
-    public Day01()
+
+    public Day01(string input) : base(input) { }
+
+    public override string ExecuteA()
     {
-        throw new NotImplementedException();
+        return "TEST " + input;
     }
 
-    public string ExecuteA()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string ExecuteB()
+    public override string ExecuteB()
     {
         throw new NotImplementedException();
     }
