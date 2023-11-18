@@ -94,9 +94,9 @@ public class FileUtils
     /// <returns>
     ///   Grid of type char.
     /// </returns>
-    public Grid<char> GetCharGrid(String delimiter = "")
+    public RectangleGrid<char> GetCharGrid(String delimiter = "")
     {
-        return new Grid<char>(Get2DList(delimiter, char.Parse));
+        return new RectangleGrid<char>(Get2DList(delimiter, char.Parse));
     }
 
     /// <summary>Gets integer grid.</summary>
@@ -104,9 +104,9 @@ public class FileUtils
     /// <returns>
     ///   Grid of type integer.
     /// </returns>
-    public Grid<int> GetIntGrid(String delimiter = "")
+    public RectangleGrid<int> GetIntGrid(String delimiter = "")
     {
-        return new Grid<int>(Get2DList(delimiter, int.Parse));
+        return new RectangleGrid<int>(Get2DList(delimiter, int.Parse));
     }
 
     /// <summary>Gets a list of lists of elmements.</summary>
