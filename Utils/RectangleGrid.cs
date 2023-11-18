@@ -57,10 +57,6 @@ public class RectangleGrid<T> : IGrid<T>
         };
     }
 
-    /// <summary>Sets the element at a row and column.</summary>
-    /// <param name="row">The row.</param>
-    /// <param name="col">The column.</param>
-    /// <param name="value">The value to set.</param>
     public override void SetElement(int row, int col, T value)
     {
         Quadrant quadrant = getQuadrant(row, col);
@@ -84,26 +80,34 @@ public class RectangleGrid<T> : IGrid<T>
         SetMinMaxValues(row, col);
     }
 
+    /// <summary>Grows the grid, keeping the grid rectangular.</summary>
+    /// <param name="row">The row where to grow to.</param>
+    /// <param name="col">The col where to grow to.</param>
     private void GrowGrid(int row, int col)
     {
         if (row > YMax || col > XMax)
         {
-            GrowGrid(Quadrant.PP, Math.Max(row, YMax), Math.Max(col, XMax));
+            GrowGridQuadrant(Quadrant.PP, Math.Max(row, YMax), Math.Max(col, XMax));
         }
         if (row > YMax || col < XMin)
         {
-            GrowGrid(Quadrant.PM, Math.Max(row, YMax), Math.Min(col, XMin));
+            GrowGridQuadrant(Quadrant.PM, Math.Max(row, YMax), Math.Min(col, XMin));
         }
         if (row < YMin || col > XMax)
         {
-            GrowGrid(Quadrant.MP, Math.Min(row, YMin), Math.Max(col, XMax));
+            GrowGridQuadrant(Quadrant.MP, Math.Min(row, YMin), Math.Max(col, XMax));
         }
         if (row < YMin || col < XMin)
         {
-            GrowGrid(Quadrant.MM, Math.Min(row, YMin), Math.Min(col, XMin));
+            GrowGridQuadrant(Quadrant.MM, Math.Min(row, YMin), Math.Min(col, XMin));
         }
     }
-    private void GrowGrid(Quadrant quadrant, int row, int col)
+
+    /// <summary>Grows a quadrant of the grid.</summary>
+    /// <param name="quadrant">The quadrant to grow.</param>
+    /// <param name="row">The row to grow to.</param>
+    /// <param name="col">The col to grow to.</param>
+    private void GrowGridQuadrant(Quadrant quadrant, int row, int col)
     {
         List<List<T>> quadrantGrid = quadrantDictionary[quadrant];
 
@@ -122,6 +126,11 @@ public class RectangleGrid<T> : IGrid<T>
         quadrantDictionary[quadrant] = newQuadrantGrid;
     }
 
+    /// <summary>Gets the quadrant corresponding to a position.</summary>
+    /// <param name="row">The row.</param>
+    /// <param name="col">The col.</param>
+    /// <returns>The corresponding quadrant</returns>
+    /// <exception cref="System.Exception">Quadrant could not be determined</exception>
     private Quadrant getQuadrant(int row, int col)
     {
         if (row >= 0 && col >= 0)
@@ -148,6 +157,7 @@ public class RectangleGrid<T> : IGrid<T>
     {
         PP, PM, MP, MM
     }
+
     public override string ToString()
     {
         List<string> rowsAsStringsPP = quadrantDictionary[Quadrant.PP].Select(row => ListToString(row, suffix: "\n")).ToList();

@@ -25,6 +25,9 @@ public abstract class IGrid<T>
         }
     }
 
+    /// <summary>Sets the minimum maximum values based on current values and row and col value.</summary>
+    /// <param name="row">The row.</param>
+    /// <param name="col">The col.</param>
     protected void SetMinMaxValues(int row, int col)
     {
         XMin = Math.Min(XMin, col);
@@ -33,8 +36,17 @@ public abstract class IGrid<T>
         YMax = Math.Max(YMax, row);
     }
 
-
+    /// <summary>Gets the element at a row and column.</summary>
+    /// <param name="row">The row.</param>
+    /// <param name="col">The column.</param>
+    /// <returns>
+    ///   element at row and column.
+    /// </returns>
     public abstract T? GetElement(int row, int col);
 
+    /// <summary>Sets the element at a row and column.</summary>
+    /// <param name="row">The row.</param>
+    /// <param name="col">The column.</param>
+    /// <param name="value">The value to set.</param>
     public abstract void SetElement(int row, int col, T value);
 }
