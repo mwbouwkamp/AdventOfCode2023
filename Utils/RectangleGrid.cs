@@ -161,34 +161,52 @@ public class RectangleGrid<T> : Grid<T>
 
     public override string ToString()
     {
-        List<string> rowsAsStringsPP = quadrantDictionary[Quadrant.PP].Select(row => ListToString(row, suffix: "\n")).ToList();
+        List<List<T>> quadrantPP = new(quadrantDictionary[Quadrant.PP]);
         if (XMin >= 0 && YMin >= 0)
+        {
+            List<string> rowsAsStringsPP = quadrantDictionary[Quadrant.PP].Select(row => ListToString(row, suffix: "\n")).ToList();
             return ListToString(rowsAsStringsPP);
+        }
 
-        List<string> rowsAsStringsPM = quadrantDictionary[Quadrant.PM]
-            .Select(row => new String(ListToString(row).Reverse().ToArray()))
-            .Select(rowAsString => rowAsString.Substring(0, rowAsString.Length - 1))
+        List<List<T>> quadrantPM = new(quadrantDictionary[Quadrant.PM]);
+        if (XMin < 0 && YMax > 0)
+        {
+            quadrantPM = quadrantPM
+                .Select(row => RemoveFirstAndReverse(row))
+                .ToList();
+        }
+
+        List<List<T>> quadrantMP = new(quadrantDictionary[Quadrant.MP]);
+        quadrantMP.RemoveAt(0);
+        quadrantMP.Reverse();
+
+        List<List<T>> quadrantMM = new(quadrantDictionary[Quadrant.MM]);
+        if (XMin < 0 && YMin < 0)
+        {
+            quadrantMM = quadrantMM
+                .Select(row => RemoveFirstAndReverse(row))
+                .ToList();
+        }
+        quadrantMM.RemoveAt(0);
+        quadrantMM.Reverse();
+
+        List<string> minRows = quadrantMM
+            .Select((row, index) => ListToString<T>(row.Concat(quadrantMP[index]).ToList(), "", "\n"))
             .ToList();
 
-        List<string> rowsAsStringsMP = quadrantDictionary[Quadrant.MP].Select(row => ListToString(row)).ToList();
-        rowsAsStringsMP.RemoveAt(0);
-        rowsAsStringsMP.Reverse();
-
-        List<string> rowsAsStringsMM = quadrantDictionary[Quadrant.MM]
-            .Select(row => new String(ListToString(row).Reverse().ToArray()))
-            .Select(rowAsString => rowAsString.Substring(0, rowAsString.Length - 1))
-            .ToList();
-        rowsAsStringsMM.RemoveAt(0);
-        rowsAsStringsMM.Reverse();
-
-        List<string> minRows = rowsAsStringsMM
-            .Select((row, index) => row + rowsAsStringsMP[index] + "\n")
-            .ToList();
-        List<string> plusRows = rowsAsStringsPM
-            .Select((row, index) => row + rowsAsStringsPP[index])
+        List<string> plusRows = quadrantPM
+            .Select((row, index) => ListToString<T>(row.Concat(quadrantPP[index]).ToList(), "", "\n"))
             .ToList();
 
         return ListToString(minRows.Concat(plusRows).ToList());
+    }
+
+    private static List<T> RemoveFirstAndReverse(List<T> row)
+    {
+        List<T> newRow = new(row);
+        newRow.RemoveAt(0);
+        newRow.Reverse();
+        return newRow;
     }
 
     /// <summary>Lists to string, concatenating all values and adding optional prefix and suffix.</summary>
