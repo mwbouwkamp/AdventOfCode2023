@@ -1,9 +1,9 @@
 ﻿namespace AdventOfCode2023;
 
-public abstract class IGrid<T>
+public abstract class Grid<T>
 {
-    protected T defaultValue;
-    protected bool isInfinite;
+    protected readonly T defaultValue;
+    protected  bool isInfinite;
 
     protected int XMin { get; set; }
     protected int XMax { get; set; }
@@ -25,6 +25,13 @@ public abstract class IGrid<T>
         }
     }
 
+    public Grid(T defaultValue)
+    {
+        if (defaultValue == null)
+            throw new ArgumentNullException(nameof(defaultValue), "defaultValue cannot be null");
+        this.defaultValue = defaultValue;
+    }
+
     /// <summary>Sets the minimum maximum values based on current values and row and col value.</summary>
     /// <param name="row">The row.</param>
     /// <param name="col">The col.</param>
@@ -42,7 +49,7 @@ public abstract class IGrid<T>
     /// <returns>
     ///   element at row and column.
     /// </returns>
-    public abstract T? GetElement(int row, int col);
+    public abstract T GetElement(int row, int col);
 
     /// <summary>Sets the element at a row and column.</summary>
     /// <param name="row">The row.</param>

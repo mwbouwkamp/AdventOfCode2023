@@ -3,7 +3,7 @@
 public class DayExecuter
 {
     private readonly Day day;
-    public DayExecuter(string day, string input) 
+    public DayExecuter(string day, string input)
     {
         this.day = day switch
         {

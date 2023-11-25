@@ -2,15 +2,18 @@
 
 namespace AdventOfCode2023;
 
-public class RectangleGrid<T> : IGrid<T>
+public class RectangleGrid<T> : Grid<T>
 {
     private readonly Dictionary<Quadrant, List<List<T>>> quadrantDictionary;
 
-    public RectangleGrid(List<List<T>> grid, T defaultValue = default(T), bool isInfinite = false) 
+    public RectangleGrid(List<List<T>> grid, T defaultValue, bool isInfinite = false) : base(defaultValue)
     {
+        if (grid == null) 
+            throw new ArgumentNullException(nameof(grid), "Grid cannot be null");
+
         int firstLineCount = grid.FirstOrDefault()?.Count ?? 0;
-        if (grid.Any(line => line.Count != firstLineCount)) 
-            throw new Exception("Grid is not rectangular");
+        if (grid.Any(line => line.Count != firstLineCount))
+            throw new ArgumentException("Grid is not rectangular");
 
         this.quadrantDictionary = new();
         quadrantDictionary.Add(Quadrant.PP, grid);
@@ -23,8 +26,6 @@ public class RectangleGrid<T> : IGrid<T>
         YMin = 0;
         YMax = grid.Count - 1;
 
-        this.defaultValue = defaultValue;
-
         this.isInfinite = isInfinite;
     }
 
@@ -34,7 +35,7 @@ public class RectangleGrid<T> : IGrid<T>
     /// <returns>
     ///   element at row and column.
     /// </returns>
-    public override T? GetElement(int row, int col)
+    public override T GetElement(int row, int col)
     {
         Quadrant quadrant = getQuadrant(row, col);
         int quadrantRow = Math.Abs(row);
@@ -116,11 +117,11 @@ public class RectangleGrid<T> : IGrid<T>
         int additionalRows = Math.Max(Math.Abs(row) - quadrantGrid.Count + 1, 0);
 
         List<List<T>> newQuadrantGrid = quadrantGrid
-            .Select(row => row.Concat(Enumerable.Repeat(defaultValue, additionalCols)).ToList())
+            .Select(quadrantRow => quadrantRow.Concat(Enumerable.Repeat(defaultValue, additionalCols)).ToList())
             .ToList();
         newQuadrantGrid.
             AddRange(Enumerable.Repeat(0, additionalRows)
-                .Select(_ => new List<T>(Enumerable.Repeat(defaultValue, currentCols + additionalCols)))
+                .Select(_ => new List<T>(Enumerable.Repeat(defaultValue, currentCols + additionalCols)).ToList())
                 .ToList());
 
         quadrantDictionary[quadrant] = newQuadrantGrid;
@@ -180,8 +181,12 @@ public class RectangleGrid<T> : IGrid<T>
         rowsAsStringsMM.RemoveAt(0);
         rowsAsStringsMM.Reverse();
 
-        List<string> minRows = rowsAsStringsMM.Select((row, index) => row + rowsAsStringsMP[index] + "\n").ToList();
-        List<string> plusRows = rowsAsStringsPM.Select((row, index) => row + rowsAsStringsPP[index]).ToList();
+        List<string> minRows = rowsAsStringsMM
+            .Select((row, index) => row + rowsAsStringsMP[index] + "\n")
+            .ToList();
+        List<string> plusRows = rowsAsStringsPM
+            .Select((row, index) => row + rowsAsStringsPP[index])
+            .ToList();
 
         return ListToString(minRows.Concat(plusRows).ToList());
     }
@@ -194,8 +199,5 @@ public class RectangleGrid<T> : IGrid<T>
     /// <returns>
     ///   String concatenating all values in the list and adding optional prefix and suffix.
     /// </returns>
-    private string ListToString<T>(List<T> list, string prefix = "", string suffix = "")
-    {
-        return prefix + list.Aggregate(new StringBuilder(), (a, b) => a.Append(b)) + suffix;
-    }
+    private static string ListToString<T>(List<T> list, string prefix = "", string suffix = "") => $"{prefix}{list.Aggregate(new StringBuilder(), (a, b) => a.Append(b.ToString()))}{suffix}";
 }

@@ -1,19 +1,16 @@
-﻿using System.Drawing;
+﻿namespace AdventOfCode2023;
 
-namespace AdventOfCode2023;
-
-public class SpotGrid<T> : IGrid<T>
+public class SpotGrid<T> : Grid<T>
 {
     readonly Dictionary<(int row, int col), T> positions;
 
-    public SpotGrid(T defaultValue = default(T))
+    public SpotGrid(T defaultValue) : base(defaultValue)
     {
         this.positions = new();
-        this.defaultValue = defaultValue;
         this.isInfinite = true;
     }
 
-    public override T? GetElement(int row, int col)
+    public override T GetElement(int row, int col)
     {
         return positions.TryGetValue((row, col), out T value) ? value : defaultValue;
     }
@@ -37,4 +34,5 @@ public class SpotGrid<T> : IGrid<T>
         });
         return new string(rows);
     }
+
 }

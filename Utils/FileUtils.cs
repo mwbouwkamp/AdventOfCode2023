@@ -96,7 +96,7 @@ public class FileUtils
     /// </returns>
     public RectangleGrid<char> GetCharGrid(String delimiter = "")
     {
-        return new RectangleGrid<char>(Get2DList(delimiter, char.Parse));
+        return new RectangleGrid<char>(Get2DList(delimiter, char.Parse), ' ');
     }
 
     /// <summary>Gets integer grid.</summary>
@@ -106,7 +106,7 @@ public class FileUtils
     /// </returns>
     public RectangleGrid<int> GetIntGrid(String delimiter = "")
     {
-        return new RectangleGrid<int>(Get2DList(delimiter, int.Parse));
+        return new RectangleGrid<int>(Get2DList(delimiter, int.Parse), ' ');
     }
 
     /// <summary>Gets a list of lists of elmements.</summary>
