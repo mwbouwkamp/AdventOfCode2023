@@ -41,7 +41,7 @@ public class Day01 : Day
             .Select(line => line.ToArray())
             .Select(line => $"{line.First()}{line.Last()}")
             .Select(line => int.Parse(line))
-            .Aggregate(0, (a, b) => a + b)
+            .Sum()
             .ToString();
     }
 
@@ -50,7 +50,7 @@ public class Day01 : Day
         return new FileUtils(input).GetLines()
             .Select(line => $"{GetFirstNumber(line, false)}{GetFirstNumber(line, true)}")
             .Select(line => int.Parse(line))
-            .Aggregate(0, (a, b) => a + b)
+            .Sum()
             .ToString();
     }
 
