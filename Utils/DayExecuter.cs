@@ -16,4 +16,9 @@ public class DayExecuter
     {
         return day.ExecuteA();
     }
+
+    public string ExecuteB()
+    {
+        return day.ExecuteB();
+    }
 }
