@@ -13,14 +13,13 @@ public class Game
         if (!Regex.IsMatch(input, inputRegex))
             throw new ArgumentException($"Input is not of the correct type: {input}");
 
-        string[] gameParts = input.Split(": ");
+        Name = Regex.Matches(input, "Game \\d+")
+            .First()
+            .ToString()
+            .Replace("Game ", "");
 
-        Name = gameParts[0].Replace("Game ", "");
-
-        CubeGroups = gameParts[1]
-            .Replace(";", ",")
-            .Split(", ")
-            .Select(group => group.Split(" "))
+        CubeGroups = Regex.Matches(input, "\\d+ (red|green|blue)")
+            .Select(group => group.ToString().Split(" "))
             .Select(group => (group[1], int.Parse(group[0])))
             .ToList();
     }
