@@ -8,6 +8,7 @@ public class DayExecuter
         this.day = day switch
         {
             "Day01" => new Day01(input),
+            "Day02" => new Day02(input),
             _ => throw new NotImplementedException($"Day not yet implemented: {day}"),
         };
     }
