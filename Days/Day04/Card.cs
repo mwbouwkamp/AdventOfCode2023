@@ -13,14 +13,15 @@ internal class Card
     {
         Id = int.Parse(Regex.Matches(input, "\\d+").First().ToString());
         string[] parts = input.Split(new char[] { ':', '|' });
-        List<string> test = parts[1].Split(" ").ToList();
-        winning = Regex.Matches(parts[1], "\\d+")
-            .Select(number => int.Parse(number.Value))
-            .ToList();
-        mine = Regex.Matches(parts[2], "\\d+")
-            .Select(number => int.Parse(number.Value))
-            .ToList();
+        winning = GetNumbers(parts[1]);
+        mine = GetNumbers(parts[2]);
         Amount = 1;
+    }
+
+    private static List<int> GetNumbers(string line) {
+        return Regex.Matches(line, "\\d+")
+            .Select(number => int.Parse(number.Value))
+            .ToList();
     }
 
     public void AddAmount(int amount)
