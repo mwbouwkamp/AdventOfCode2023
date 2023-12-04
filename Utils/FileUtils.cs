@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023;
+﻿using System.Linq;
+
+namespace AdventOfCode2023;
 
 public class FileUtils
 {
@@ -118,11 +120,19 @@ public class FileUtils
     /// </returns>
     private List<List<T>> Get2DList<T>(String delimiter, Func<string, T> parser)
     {
-        return GetLines()
-            .Select(line => line
-                .Split(delimiter)
-                .Select(parser)
-                .ToList())
-            .ToList();
+        return delimiter != ""
+            ? GetLines()
+                .Select(line => line
+                    .Split(delimiter)
+                    .Select(parser)
+                    .ToList())
+                .ToList()
+            : GetLines()
+                .Select(line => line
+                    .ToCharArray()
+                    .Select(chr => chr.ToString())
+                    .Select(parser)
+                    .ToList())
+                .ToList();
     }
 }
