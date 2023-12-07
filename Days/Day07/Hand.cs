@@ -28,29 +28,44 @@ public class Hand : IComparable
             : int.Parse(card.ToString()))
             .ToList();
 
-        SetScore();
+        Score = GetScore(Cards);
 
     }
 
-    public void SetScore()
+    public void ApplyJokers()
     {
-        List<char> cards = Cards.ToCharArray().ToList();
+        CardValues = CardValues
+            .Select(cardValue => cardValue == 11 ? -1 : cardValue)
+            .ToList();
+
+        if (Cards == "JJJJJ")
+            return;
+
+        Score = Cards.Replace("J", "")
+            .ToCharArray()
+            .Select(chr => Cards.Replace('J', chr))
+            .Select(chr => GetScore(chr.ToString()))
+            .Max();
+    }
+    public int GetScore(string input)
+    {
+        List<char> cards = input.ToCharArray().ToList();
         cards.Sort();
         string sortedCards = new(cards.ToArray());
         if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1\\1\\1"))
-            Score = 6;
+            return  6;
         else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1\\1"))
-            Score = 5;
+            return 5;
         else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1([A-Z0-9])\\2") || Regex.IsMatch(sortedCards, "([A-Z0-9])\\1([A-Z0-9])\\2\\2"))
-            Score = 4;
+            return 4;
         else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1"))
-            Score = 3;
+            return 3;
         else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1.*([A-Z0-9])\\2"))
-            Score = 2;
+            return 2;
         else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1"))
-            Score = 1;
+            return 1;
         else
-            Score = 0;
+            return 0;
     }
 
     public int CompareTo(object? obj)
