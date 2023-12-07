@@ -12,6 +12,7 @@ public class DayExecuter
             "Day03" => new Day03(input),
             "Day04" => new Day04(input),
             "Day05" => new Day05(input),
+            "Day06" => new Day06(input),
             _ => throw new NotImplementedException($"Day not yet implemented: {day}"),
         };
     }
