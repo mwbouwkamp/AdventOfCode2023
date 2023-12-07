@@ -29,7 +29,6 @@ public class Hand : IComparable
             .ToList();
 
         Score = GetScore(Cards);
-
     }
 
     public void ApplyJokers()
@@ -47,22 +46,22 @@ public class Hand : IComparable
             .Select(chr => GetScore(chr.ToString()))
             .Max();
     }
-    public int GetScore(string input)
+
+    public static int GetScore(string input)
     {
-        List<char> cards = input.ToCharArray().ToList();
-        cards.Sort();
-        string sortedCards = new(cards.ToArray());
+        string sortedCards = new(input.OrderBy(c => c).ToArray());
+        
         if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1\\1\\1"))
             return  6;
-        else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1\\1"))
+        if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1\\1"))
             return 5;
-        else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1([A-Z0-9])\\2") || Regex.IsMatch(sortedCards, "([A-Z0-9])\\1([A-Z0-9])\\2\\2"))
+        if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1([A-Z0-9])\\2") || Regex.IsMatch(sortedCards, "([A-Z0-9])\\1([A-Z0-9])\\2\\2"))
             return 4;
-        else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1"))
+        if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1\\1"))
             return 3;
-        else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1.*([A-Z0-9])\\2"))
+        if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1.*([A-Z0-9])\\2"))
             return 2;
-        else if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1"))
+        if (Regex.IsMatch(sortedCards, "([A-Z0-9])\\1"))
             return 1;
         else
             return 0;
@@ -70,17 +69,16 @@ public class Hand : IComparable
 
     public int CompareTo(object? obj)
     {
-        Hand comparingHand = obj as Hand;
+        Hand comparingHand = obj as Hand 
+            ?? throw new ArgumentException("Object is not of type Hand", nameof(obj));
+
         if (this.Score != comparingHand.Score)
             return this.Score.CompareTo(comparingHand.Score);
-        if (this.CardValues[0] != comparingHand.CardValues[0])
-            return this.CardValues[0].CompareTo(comparingHand.CardValues[0]);
-        if (this.CardValues[1] != comparingHand.CardValues[1])
-            return this.CardValues[1].CompareTo(comparingHand.CardValues[1]);
-        if (this.CardValues[2] != comparingHand.CardValues[2])
-            return this.CardValues[2].CompareTo(comparingHand.CardValues[2]);
-        if (this.CardValues[3] != comparingHand.CardValues[3])
-            return this.CardValues[3].CompareTo(comparingHand.CardValues[3]);
-        return this.CardValues[4].CompareTo(comparingHand.CardValues[4]);
+
+        for (int i = 0; i < 5; i++)
+            if (this.CardValues[i] != comparingHand.CardValues[i])
+                return this.CardValues[i].CompareTo(comparingHand.CardValues[i]);
+
+        return 0;
     }
 }
