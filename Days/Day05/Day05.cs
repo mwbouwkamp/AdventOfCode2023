@@ -69,21 +69,45 @@ public class Day05 : Day
             .Select(match => long.Parse(match.Value))
             .ToList();
 
-        List<long> seeds = new();
-
-        for (int pair = 0; pair < seedRanges.Count / 2; pair++)
-        {
-            for (long i = seedRanges[pair * 2]; i < seedRanges[pair * 2] + seedRanges[pair * 2 + 1]; i++)
-            {
-                seeds.Add(i);
-            }
-        }
+        List<Range> ranges = new();
+        for (int i = 0; i < seedRanges.Count / 2; i++)
+            ranges.Add(new(seedRanges[i * 2], seedRanges[i * 2] + seedRanges[i * 2 + 1]));
 
         lines.RemoveAt(0);
         lines.RemoveAt(0);
 
         List<Map> maps = GetMaps(lines);
 
-        return Solve(seeds.Distinct().ToList(), maps);
+        ranges = ranges
+            .SelectMany(range =>
+            {
+                List<Range> innerRange = new() { range };
+                foreach (Map map in maps)
+                {
+                    innerRange = innerRange
+                        .SelectMany(range => map.ConvertRanges(range))
+                        .ToList();
+                }
+                return innerRange;
+            })
+            .ToList();
+
+        return ranges
+            .Select(range => range.start)
+            .Min()
+            .ToString();
+
+
+    }
+
+    public class Range
+    {
+        public long start;
+        public long end;
+        public Range(long start, long end)
+        {
+            this.start = start;
+            this.end = end;
+        }
     }
 }
