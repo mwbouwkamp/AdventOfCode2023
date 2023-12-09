@@ -37,7 +37,6 @@ public class Map
             return new() { rangeToConvert };
 
         overlappingRanges.Sort((a, b) => a.start.CompareTo(b.start));
-        List<Day05.Range> converted = new();
 
         List<(long start, long delta)> points = new()
         {
@@ -69,18 +68,12 @@ public class Map
         }
         points.Sort((a, b) => a.start.CompareTo(b.start));
 
+        List<Day05.Range> converted = new();
         for (int i = 0; i < points.Count - 1; i++)
         {
             if (points[i + 1].start - points[i].start > 1)
                 converted.Add(new(points[i].start + points[i].delta, points[i + 1].start + points[i].delta));
         }
-        //Console.WriteLine("Ranges");
-        //ranges.ForEach(range => Console.WriteLine($"start: {range.start}; end: {range.end}; delta: {range.delta}"));
-        //Console.WriteLine("In");
-        //Console.WriteLine($"start: {rangeToConvert.start}; end: {rangeToConvert.end}");
-        //Console.WriteLine("Converted");
-        //converted.ForEach(range => Console.WriteLine($"start: {range.start}; end: {range.end}"));
-        //Console.WriteLine(" ");
 
         return converted;
     }
