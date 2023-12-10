@@ -56,4 +56,19 @@ public abstract class Grid<T>
     /// <param name="col">The column.</param>
     /// <param name="value">The value to set.</param>
     public abstract void SetElement(int row, int col, T value);
+
+    public (int col, int row) FindFirst(T element)
+    {
+        for (int row = 0; row < Height; row++)
+        {
+            for (int col = 0; col < Width; row++)
+            {
+                if (GetElement(row, col).Equals(element))
+                {
+                    return (row, col);
+                }
+            }
+        }
+        return (-1, -1);
+    }
 }
