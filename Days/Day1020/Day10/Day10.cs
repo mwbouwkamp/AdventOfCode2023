@@ -17,7 +17,112 @@ public class Day10 : Day
 
     public override string ExecuteB()
     {
-        throw new NotImplementedException();
+        List<List<char>> inputChars = new FileUtils(input).GetLines()
+            .Select(line => line.ToCharArray().ToList()).ToList();
+
+        (int row, int col) start = FindStart(new FileUtils(input).GetLines());
+        PipeSystem pipeSystem = new PipeSystem(inputChars, start);
+
+        Dictionary<int, List<int>> horizontalDictionary = new();
+        Dictionary<int, List<int>> verticalDictionary = new();
+
+        pipeSystem.Segments.ForEach(segment =>
+        {
+            int row = segment.Row;
+            int col = segment.Col;
+
+            horizontalDictionary.TryGetValue(row, out List<int> horizontal);
+            if (horizontal != null)
+            {
+                horizontal.Add(col);
+            }
+            else
+            {
+                horizontalDictionary.Add(row, new List<int>() { col });
+            }
+
+            verticalDictionary.TryGetValue(col, out List<int> vertical);
+            if (vertical != null)
+            {
+                vertical.Add(row);
+            }
+            else
+            {
+                verticalDictionary.Add(col, new List<int>() { row });
+            }
+        });
+
+        List<(int row, int col)> solvable = new();
+        List<(int row, int col)> insolvable = new();
+        for (int row = 0; row < pipeSystem.Height; row++)
+        {
+            if (pipeSystem.GetElement(row, 0) == '.')
+                solvable.Add((row, 0));
+            if (pipeSystem.GetElement(row, pipeSystem.Height - 1) == '.')
+                solvable.Add((row, pipeSystem.Height - 1));
+        }
+        for (int col = 0; col < pipeSystem.Width; col++)
+        {
+            if (pipeSystem.GetElement(0, col) == '.')
+                solvable.Add((0, col));
+            if (pipeSystem.GetElement(pipeSystem.Width - 1, col) == '.')
+                solvable.Add((pipeSystem.Width - 1, col));
+        }
+
+        for (int row = 1; row < pipeSystem.Height - 1; row++)
+        {
+            for (int col = 1; col < pipeSystem.Width - 1; col++)
+            {
+                if (pipeSystem.Segments.Any(segment => segment.Row == row && segment.Col == col))
+                {
+                    continue;
+                }
+                horizontalDictionary.TryGetValue(row, out List<int> horizontal);
+                int numEast = horizontal == null
+                    ? 0
+                    : horizontal
+                        .Where(element => element < col)
+                        .Count();
+                int numWest = horizontal == null
+                    ? 0
+                    : horizontal
+                        .Where(element => element > col)
+                        .Count();
+
+                verticalDictionary.TryGetValue(col, out List<int> vertical);
+                int numNorth = vertical == null
+                    ? 0
+                    : vertical
+                        .Where(element => element < row)
+                        .Count();
+                int numSouth = vertical == null
+                    ? 0
+                    : vertical
+                        .Where(element => element > row)
+                        .Count();
+                int barriers = 0;
+                if (numEast % 2 == 1)
+                    barriers++;
+                if (numWest % 2 == 1)
+                    barriers++;
+                if (numNorth % 2 == 1)
+                    barriers++;
+                if (numSouth % 2 == 1)
+                    barriers++;
+
+                if (barriers ==4)
+                {
+                    insolvable.Add((row, col));
+                }
+                else
+                {
+                    solvable.Add((row, col));
+                }
+
+            }
+        }
+        return insolvable.Count.ToString(); 
+
     }
 
     public static (int row, int col) FindStart(List<string> lines)
