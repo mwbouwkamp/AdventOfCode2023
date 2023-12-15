@@ -26,7 +26,6 @@ public class Day13 : Day
         }
         grids.Add(collector);
 
-        // low: 23105
         return grids.Select(grid => SolveInput(grid)).Sum().ToString();
     }
 
@@ -48,35 +47,7 @@ public class Day13 : Day
     private static int Solve(List<string> vertical)
     {
         List<List<int>> mirrors = vertical
-            .Select(line =>
-            {
-                List<int> mirrors = new();
-                for (int i = 1; i < line.Length / 2; i++)
-                {
-                    string left = line[..i];
-                    string right = line.Substring(i, left.Length);
-                    char[] rightChars = right.ToCharArray();
-                    rightChars = rightChars.Reverse().ToArray();
-                    right = new string(rightChars);
-                    if (right == left)
-                    {
-                        mirrors.Add(i);
-                    }
-                }
-                for (int i = line.Length / 2 + 1; i < line.Length - 1; i++)
-                {
-                    string right = line[i..];
-                    string left = line.Substring(i - right.Length, right.Length);
-                    char[] leftChars = left.ToCharArray();
-                    leftChars = leftChars.Reverse().ToArray();
-                    left = new string(leftChars);
-                    if (right == left)
-                    {
-                        mirrors.Add(i);
-                    }
-                }
-                return mirrors;
-            })
+            .Select(line => GetPotentialMirrors(line))
             .ToList();
 
         List<int> candidates = mirrors[0];
@@ -87,6 +58,36 @@ public class Day13 : Day
                 .ToList();
         }
         return candidates.Count == 1 ? candidates[0] : -1;
+    }
+
+    public static List<int> GetPotentialMirrors(string line)
+    {
+        List<int> mirrors = new();
+        for (int i = 1; i < line.Length / 2 + 1; i++)
+        {
+            string left = line[..i];
+            string right = line.Substring(i, left.Length);
+            char[] rightChars = right.ToCharArray();
+            rightChars = rightChars.Reverse().ToArray();
+            right = new string(rightChars);
+            if (right == left)
+            {
+                mirrors.Add(i);
+            }
+        }
+        for (int i = line.Length / 2 + 1; i < line.Length; i++)
+        {
+            string right = line[i..];
+            string left = line.Substring(i - right.Length, right.Length);
+            char[] leftChars = left.ToCharArray();
+            leftChars = leftChars.Reverse().ToArray();
+            left = new string(leftChars);
+            if (right == left)
+            {
+                mirrors.Add(i);
+            }
+        }
+        return mirrors;
     }
 
     private static List<string> RotateGrid(List<string> lines)
