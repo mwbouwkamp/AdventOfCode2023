@@ -8,6 +8,13 @@ public class Day13 : Day
 
     public override string ExecuteA()
     {
+        List<List<string>> grids = CreateGrids();
+
+        return grids.Select(grid => SolveInput(grid)).Sum().ToString();
+    }
+
+    private List<List<string>> CreateGrids()
+    {
         List<string> inputLines = new FileUtils(input).GetLines();
         List<List<string>> grids = new();
         List<string> collector = new();
@@ -18,30 +25,50 @@ public class Day13 : Day
             if (current.Length > 0)
             {
                 collector.Add(current);
-            } else
+            }
+            else
             {
                 grids.Add(collector);
                 collector = new();
             }
         }
         grids.Add(collector);
-
-        return grids.Select(grid => SolveInput(grid)).Sum().ToString();
+        return grids;
     }
 
-    private int SolveInput(List<string> lines)
+    private static int SolveInput(List<string> lines, int smudgeRow = -1, int smudgeCol = -1, int noSmudgeSolution = -1)
     {
-        List<string> vertical = lines;
-        List<string> horizontal = RotateGrid(vertical);
+        if (smudgeCol >= 0 && smudgeRow >= 0)
+        {
+            List<string> newLines = new(lines);
+            char current = newLines[smudgeRow][smudgeCol];
+            string newLine = newLines[smudgeRow][..smudgeCol] + (current == '.' ? '#' : '.') + newLines[smudgeRow][(smudgeCol + 1)..];
+            newLines[smudgeRow] = newLine;
 
-        int verticalSolution = Solve(vertical);
+            List<string> verticalSmudge = newLines;
+            List<string> horizontalSmudge = RotateGrid(verticalSmudge);
 
-        int test = Solve(horizontal);
+            int verticalSolutionSmudge = Solve(verticalSmudge);
+            int horizontalSolutionSmudge = Solve(horizontalSmudge);
 
+            return verticalSolutionSmudge != -1 && verticalSolutionSmudge != noSmudgeSolution
+                ? verticalSolutionSmudge
+                : horizontalSolutionSmudge != -1 && 100 * horizontalSolutionSmudge != noSmudgeSolution
+                ? 100 * horizontalSolutionSmudge
+                : -1;
+        }
 
-        return verticalSolution != -1
-            ? verticalSolution
-            : 100* Solve(horizontal);
+        List<string> verticalNoSmudge = lines;
+        List<string> horizontalNoSmudge = RotateGrid(verticalNoSmudge);
+
+        int verticalSolutionNoSmudge = Solve(verticalNoSmudge);
+        int horizontalSolutionNoSmudge = Solve(horizontalNoSmudge);
+
+        return verticalSolutionNoSmudge != -1
+            ? verticalSolutionNoSmudge
+            : horizontalSolutionNoSmudge != -1
+            ? 100 * horizontalSolutionNoSmudge
+            : -1;
     }
 
     private static int Solve(List<string> vertical)
@@ -57,7 +84,7 @@ public class Day13 : Day
                 .Where(candidate => mirrors[i].Any(x => x == candidate))
                 .ToList();
         }
-        return candidates.Count == 1 ? candidates[0] : -1;
+        return candidates.Count == 1 ? candidates.Min() : -1;
     }
 
     public static List<int> GetPotentialMirrors(string line)
@@ -111,6 +138,32 @@ public class Day13 : Day
 
     public override string ExecuteB()
     {
-        throw new NotImplementedException();
+        List<List<string>> grids = CreateGrids();
+
+        return grids
+            .Select(grid => SolveBForGrid(grid))
+            .Sum()
+            .ToString();
+    }
+
+    private static int SolveBForGrid(List<string> grid)
+    {
+        int noSmudgeSolution = SolveInput(grid);
+        for (int row = 0; row < grid.Count; row++)
+        {
+            for (int col = 0; col < grid[row].Length; col++)
+            {
+                int result = SolveInput(grid, row, col, noSmudgeSolution);
+                if (result > 0)
+                {
+                    Console.WriteLine(result);
+                    return result;
+                }
+            }
+        }
+        Console.WriteLine("!!!!");
+        return -1;
+
+        //low: 15938
     }
 }

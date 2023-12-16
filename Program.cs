@@ -1,3 +1,3 @@
 ﻿using AdventOfCode2023;
 
-Console.WriteLine(new DayExecuter("Day13", "input13.txt").ExecuteA());
+Console.WriteLine(new DayExecuter("Day16", "input16.txt").ExecuteA());
