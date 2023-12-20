@@ -5,10 +5,10 @@ public abstract class Grid<T>
     protected readonly T defaultValue;
     protected  bool isInfinite;
 
-    protected int XMin { get; set; }
-    protected int XMax { get; set; }
-    protected int YMin { get; set; }
-    protected int YMax { get; set; }
+    public int XMin { get; set; }
+    public int XMax { get; set; }
+    public int YMin { get; set; }
+    public int YMax { get; set; }
 
     public int Width
     {

@@ -4,6 +4,8 @@ public class SpotGrid<T> : Grid<T>
 {
     public Dictionary<(int row, int col), T> Positions { get; set; }
 
+    public int Count { get { return Positions.Count; } }
+
     public SpotGrid(T defaultValue) : base(defaultValue)
     {
         this.Positions = new();

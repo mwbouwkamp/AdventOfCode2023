@@ -9,9 +9,14 @@ public class Day16 : Day
     public override string ExecuteA()
     {
         RectangleGrid<char> tile = new FileUtils(input).GetCharGrid();
+        return SolveForStarintPoint(tile, new State(0, 0, '>')).count.ToString();
+    }
 
+    private (int count, List<State> exits) SolveForStarintPoint(RectangleGrid<char> tile, State startingState)
+    {
         List<State> energized = new();
-        HashSet<State> fringe = new(new StateComparer()) { new State(0, 0, '>') };
+        List<State> exits = new() { startingState };
+        HashSet<State> fringe = new(new StateComparer()) { startingState };
         while (fringe.Count > 0)
         {
             State current = fringe.ElementAt(0);
@@ -19,18 +24,18 @@ public class Day16 : Day
             fringe.Remove(current);
             energized.Add(current);
             char instruction = tile.GetElement(current.Row, current.Col);
-            (int row, int col) newPosition;
             List<char> newDirections = new();
-            switch (instruction) 
+            switch (instruction)
             {
                 case '.':
                     newDirections.Add(current.Direction);
                     break;
                 case '-':
-                    if (current.Direction == '>' || current.Direction == '<') 
+                    if (current.Direction == '>' || current.Direction == '<')
                     {
                         newDirections.Add(current.Direction);
-                    } else
+                    }
+                    else
                     {
                         newDirections.Add('<');
                         newDirections.Add('>');
@@ -88,33 +93,53 @@ public class Day16 : Day
             }
             newDirections.ForEach(newDirection =>
             {
-                try
+                (int row, int col)? newPosition = GetNewPosition(current, newDirection, tile, out bool isExit);
+                if (newPosition != null)
                 {
-                    newPosition = GetNewPosition(current, newDirection, tile);
-                    State newState = new(newPosition.row, newPosition.col, newDirection);
-                    if (!energized.Where(state => state.ToString().Equals(newState.ToString())).Any()) 
+                    State newState = new(newPosition.Value.row, newPosition.Value.col, newDirection);
+                    if (!energized.Where(state => state.ToString().Equals(newState.ToString())).Any())
                     {
                         fringe.Add(newState);
                     }
                 }
-                catch { };
+                if (isExit)
+                {
+                    State exitState = new(current.Row, current.Col, current.Direction);
+                    if (!exits.Where(state => state.ToString().Equals(exitState.ToString())).Any())
+                    {
+                        exits.Add(exitState);
+                    }
+                }
             });
+            energized = energized.DistinctBy(state => $"{state.Row},{state.Col}").ToList();
         }
-        energized = energized.DistinctBy(state => $"{state.Row},{state.Col}").ToList();
-        return energized.Count.ToString();
+        return (energized.Count, exits);
     }
 
-    private (int row, int col) GetNewPosition(State state, char direction, RectangleGrid<char> grid)
+    private (int row, int col)? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
     {
         if (direction == '>' && state.Col < grid.Width - 1)
+        {
+            isExit = false;
             return (state.Row, state.Col + 1);
+        }
         if (direction == '<' && state.Col > 0)
+        {
+            isExit = false;
             return (state.Row, state.Col - 1);
+        }
         if (direction == 'v' && state.Row < grid.Height - 1)
+        {
+            isExit = false;
             return (state.Row + 1, state.Col);
+        }
         if (direction == '^' && state.Row > 0)
+        {
+            isExit = false;
             return (state.Row - 1, state.Col);
-        throw new ArgumentException($"Direction not allowed: {direction}");
+        }
+        isExit = true;
+        return null;
     }
 
     public class State
@@ -150,6 +175,70 @@ public class Day16 : Day
 
     public override string ExecuteB()
     {
-        throw new NotImplementedException();
+        RectangleGrid<char> tile = new FileUtils(input).GetCharGrid();
+        List<State> startingStatesExplored = new();
+
+        int highest = 0;
+        State upperLeftRight = new(0, 0, '>');
+        highest = UpdateIfHigher(tile, highest, upperLeftRight, startingStatesExplored);
+
+        State upperLeftDown = new(0, 0, 'v');
+        highest = UpdateIfHigher(tile, highest, upperLeftDown, startingStatesExplored);
+
+        State upperRightLeft = new(0, tile.Width - 1, '<');
+        highest = UpdateIfHigher(tile, highest, upperRightLeft, startingStatesExplored);
+
+        State upperRightDown = new(0, tile.Width - 1, 'v');
+        highest = UpdateIfHigher(tile, highest, upperRightDown, startingStatesExplored);
+
+        State bottomLeftRight = new(tile.Height - 1, 0, '>');
+        highest = UpdateIfHigher(tile, highest, bottomLeftRight, startingStatesExplored);
+
+        State bottomLeftUp = new(tile.Height - 1, 0, '^');
+        highest = UpdateIfHigher(tile, highest, bottomLeftUp, startingStatesExplored);
+
+        State bottomRightLeft = new(tile.Height - 1, tile.Width - 1, '<');
+        highest = UpdateIfHigher(tile, highest, bottomRightLeft, startingStatesExplored);
+
+        State bottomRightUp = new(tile.Height - 1, tile.Width - 1, '^');
+        highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+
+        for (int row = 1; row < tile.Height - 1; row++)
+        {
+            if (!startingStatesExplored.Where(state => state.Row == row && state.Col == 0).Any())
+            {
+                State start = new(row, 0, '>');
+                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+            }
+            if (!startingStatesExplored.Where(state => state.Row == row && state.Col == tile.Width - 1).Any())
+            {
+                State start = new(row, tile.Width - 1, '<');
+                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+            }
+        }
+
+        for (int col = 1; col < tile.Width- 1; col++)
+        {
+            if (!startingStatesExplored.Where(state => state.Col == col && state.Row == 0).Any())
+            {
+                State start = new(0, col, 'v');
+                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+            }
+            if (!startingStatesExplored.Where(state => state.Col == col && state.Row == tile.Height - 1).Any())
+            {
+                State start = new(tile.Height - 1, col, '^');
+                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+            }
+        }
+        return highest.ToString();
+    }
+
+    private int UpdateIfHigher(RectangleGrid<char> tile, int highest, State upperLeftRight, List<State> startingStatesExplored)
+    {
+        (int count, List<State> exits) = SolveForStarintPoint(tile, upperLeftRight);
+        highest = Math.Max(highest, count);
+        startingStatesExplored.AddRange(exits);
+        startingStatesExplored = startingStatesExplored.DistinctBy(state => $"{state.Row},{state.Col}").ToList();
+        return highest;
     }
 }
