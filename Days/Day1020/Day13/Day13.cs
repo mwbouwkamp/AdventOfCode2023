@@ -42,7 +42,7 @@ public class Day13 : Day
         {
             List<string> newLines = new(lines);
             char current = newLines[smudgeRow][smudgeCol];
-            string newLine = newLines[smudgeRow][..smudgeCol] + (current == '.' ? '#' : '.') + newLines[smudgeRow][(smudgeCol + 1)..];
+            string newLine = newLines[smudgeRow].Remove(smudgeCol, 1).Insert(smudgeCol, current == '.' ? "#" : ".");
             newLines[smudgeRow] = newLine;
 
             List<string> verticalSmudge = newLines;
@@ -164,6 +164,6 @@ public class Day13 : Day
         Console.WriteLine("!!!!");
         return -1;
 
-        //low: 15938
+        //low: 15981
     }
 }

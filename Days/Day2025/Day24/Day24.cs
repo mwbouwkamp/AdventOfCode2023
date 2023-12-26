@@ -25,10 +25,6 @@ public class Day24 : Day
         {
             for (int j = i + 1; j < lines.Count; j++)
             {
-                //if (passed.Contains(lines[i]) || passed.Contains(lines[j]))
-                //{
-                //    continue;
-                //}
                 double intersectionX = (lines[j].Alpha - lines[i].Alpha) / (lines[i].Coefficient - lines[j].Coefficient);
                 double intersectionY = lines[i].Coefficient * intersectionX + lines[i].Alpha;
                 if (intersectionX >= min && intersectionX <= max && intersectionY >= min && intersectionY <= max)
@@ -53,7 +49,47 @@ public class Day24 : Day
     }
     public override string ExecuteB()
     {
-        throw new NotImplementedException();
+        List<HailLine3D> lines = new FileUtils(input).GetLines()
+            .Select(line => new HailLine3D(line))
+            .ToList();
+
+        List<(long x, long y, long z)> starts = new();
+
+        lines.ForEach(line =>
+        {
+            List<(long x, long y, long z)> potentialStarts = new();
+            for (int i = 0; i < 20; i++)
+            {
+                (long x, long y, long z) intersection = (
+                    line.StartingPoint.x + i * line.Velocities.x,
+                    line.StartingPoint.y + i * line.Velocities.y,
+                    line.StartingPoint.z + i * line.Velocities.z);
+                potentialStarts.AddRange(line.Vectors.Select(vector => (intersection.x + i * vector.x, intersection.y + i * vector.y, intersection.z + i * vector.z)));
+            }
+            if (starts.Count == 0 ) 
+            {
+                starts = potentialStarts;
+            }
+            else
+            {
+                starts = starts.Intersect(potentialStarts, new Position3DComparer()).ToList();
+            }
+        });
+        return "";
+
+    }
+}
+
+internal class Position3DComparer : IEqualityComparer<(long x, long y, long z)>
+{
+    public bool Equals((long x, long y, long z) x, (long x, long y, long z) y)
+    {
+        return x.x == y.x && x.y == y.y && x.z == y.z;
+    }
+
+    public int GetHashCode([DisallowNull] (long x, long y, long z) obj)
+    {
+        return $"{obj.x},{obj.y},{obj.z}".GetHashCode();
     }
 }
 

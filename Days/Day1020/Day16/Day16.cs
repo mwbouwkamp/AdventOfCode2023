@@ -9,10 +9,11 @@ public class Day16 : Day
     public override string ExecuteA()
     {
         RectangleGrid<char> tile = new FileUtils(input).GetCharGrid();
-        return SolveForStarintPoint(tile, new State(0, 0, '>')).count.ToString();
+
+        return SolveForStarintPoint(tile, new State(0, 0, '>')).energized.DistinctBy(state => $"{state.Row},{state.Col}").ToList().Count.ToString();
     }
 
-    private (int count, List<State> exits) SolveForStarintPoint(RectangleGrid<char> tile, State startingState)
+    private (List<State> energized, List<State> exits) SolveForStarintPoint(RectangleGrid<char> tile, State startingState)
     {
         List<State> energized = new();
         List<State> exits = new() { startingState };
@@ -20,7 +21,6 @@ public class Day16 : Day
         while (fringe.Count > 0)
         {
             State current = fringe.ElementAt(0);
-            Console.WriteLine(current);
             fringe.Remove(current);
             energized.Add(current);
             char instruction = tile.GetElement(current.Row, current.Col);
@@ -111,9 +111,8 @@ public class Day16 : Day
                     }
                 }
             });
-            energized = energized.DistinctBy(state => $"{state.Row},{state.Col}").ToList();
         }
-        return (energized.Count, exits);
+        return (energized, exits);
     }
 
     private (int row, int col)? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
@@ -177,68 +176,86 @@ public class Day16 : Day
     {
         RectangleGrid<char> tile = new FileUtils(input).GetCharGrid();
         List<State> startingStatesExplored = new();
+        List<State> energizedStates = new();
 
         int highest = 0;
+
         State upperLeftRight = new(0, 0, '>');
-        highest = UpdateIfHigher(tile, highest, upperLeftRight, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, upperLeftRight, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State upperLeftDown = new(0, 0, 'v');
-        highest = UpdateIfHigher(tile, highest, upperLeftDown, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, upperLeftDown, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State upperRightLeft = new(0, tile.Width - 1, '<');
-        highest = UpdateIfHigher(tile, highest, upperRightLeft, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, upperRightLeft, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State upperRightDown = new(0, tile.Width - 1, 'v');
-        highest = UpdateIfHigher(tile, highest, upperRightDown, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, upperRightDown, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State bottomLeftRight = new(tile.Height - 1, 0, '>');
-        highest = UpdateIfHigher(tile, highest, bottomLeftRight, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, bottomLeftRight, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State bottomLeftUp = new(tile.Height - 1, 0, '^');
-        highest = UpdateIfHigher(tile, highest, bottomLeftUp, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, bottomLeftUp, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State bottomRightLeft = new(tile.Height - 1, tile.Width - 1, '<');
-        highest = UpdateIfHigher(tile, highest, bottomRightLeft, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, bottomRightLeft, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         State bottomRightUp = new(tile.Height - 1, tile.Width - 1, '^');
-        highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+        highest = Math.Max(highest, UpdateIfHigher(tile, bottomRightUp, startingStatesExplored).Count);
+        Console.WriteLine("." + highest);
 
         for (int row = 1; row < tile.Height - 1; row++)
         {
             if (!startingStatesExplored.Where(state => state.Row == row && state.Col == 0).Any())
             {
                 State start = new(row, 0, '>');
-                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+                highest = Math.Max(highest, UpdateIfHigher(tile, start, startingStatesExplored).Count   );
             }
             if (!startingStatesExplored.Where(state => state.Row == row && state.Col == tile.Width - 1).Any())
             {
                 State start = new(row, tile.Width - 1, '<');
-                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+                highest = Math.Max(highest, UpdateIfHigher(tile, start, startingStatesExplored).Count);
             }
+            Console.WriteLine(highest);
         }
 
-        for (int col = 1; col < tile.Width- 1; col++)
+        for (int col = 1; col < tile.Width - 1; col++)
         {
             if (!startingStatesExplored.Where(state => state.Col == col && state.Row == 0).Any())
             {
                 State start = new(0, col, 'v');
-                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+                highest = Math.Max(highest, UpdateIfHigher(tile, start, startingStatesExplored).Count);
             }
             if (!startingStatesExplored.Where(state => state.Col == col && state.Row == tile.Height - 1).Any())
             {
                 State start = new(tile.Height - 1, col, '^');
-                highest = UpdateIfHigher(tile, highest, bottomRightUp, startingStatesExplored);
+                highest = Math.Max(highest, UpdateIfHigher(tile, start, startingStatesExplored).Count);
             }
+            Console.WriteLine(highest);
+
         }
+
         return highest.ToString();
     }
 
-    private int UpdateIfHigher(RectangleGrid<char> tile, int highest, State upperLeftRight, List<State> startingStatesExplored)
+    private List<State> UpdateIfHigher(RectangleGrid<char> tile, State upperLeftRight, List<State> startingStatesExplored)
     {
-        (int count, List<State> exits) = SolveForStarintPoint(tile, upperLeftRight);
-        highest = Math.Max(highest, count);
+        List<State> energizedStates = new();
+        (List<State> energized, List<State> exits) = SolveForStarintPoint(tile, upperLeftRight);
+
+        energizedStates.AddRange(energized.DistinctBy(state => $"{state.Row},{state.Col}"));
+        
         startingStatesExplored.AddRange(exits);
         startingStatesExplored = startingStatesExplored.DistinctBy(state => $"{state.Row},{state.Col}").ToList();
-        return highest;
+        
+        return energizedStates;
     }
 }
