@@ -93,7 +93,7 @@ public class Day16 : Day
             }
             newDirections.ForEach(newDirection =>
             {
-                (int row, int col)? newPosition = GetNewPosition(current, newDirection, tile, out bool isExit);
+                Point? newPosition = GetNewPosition(current, newDirection, tile, out bool isExit);
                 if (newPosition != null)
                 {
                     State newState = new(newPosition.Value.row, newPosition.Value.col, newDirection);
@@ -115,7 +115,7 @@ public class Day16 : Day
         return (energized, exits);
     }
 
-    private (int row, int col)? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
+    private Point? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
     {
         if (direction == '>' && state.Col < grid.Width - 1)
         {

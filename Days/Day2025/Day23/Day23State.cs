@@ -2,12 +2,12 @@
 
 public class Day23State : SpotGrid<char>
 {
-    public List<(int row, int col)> Path { get; set; }
-    public (int row, int col) Position { get; set; }
+    public List<Point> Path { get; set; }
+    public Point Position { get; set; }
     public int Heuristic { get; set; }
-    public Dictionary<(int row, int col), List<(int row, int col)>> NeighboursDictionary;
+    public Dictionary<Point, List<Point>> NeighboursDictionary;
 
-    public Day23State((int row, int col) position) : base('.') 
+    public Day23State(Point position) : base('.') 
     {
         Path = new() { position };
         Position = position;
@@ -27,7 +27,7 @@ public class Day23State : SpotGrid<char>
             .ToDictionary(position => position, position => GetAllNeighboursB(position));
     }
 
-    public Day23State(Day23State previousState, (int row, int col) position) : base('.')
+    public Day23State(Day23State previousState, Point position) : base('.')
     {
         Positions = previousState.Positions;
         Position = position;
@@ -43,7 +43,7 @@ public class Day23State : SpotGrid<char>
 
     public List<Day23State> GetChildren()
     {
-        List<(int row, int col)> childPositions = NeighboursDictionary[Position];
+        List<Point> childPositions = NeighboursDictionary[Position];
 
         return childPositions
             .Where(child => !Path.Any(position => position.row == child.row && position.col == child.col))
@@ -51,9 +51,9 @@ public class Day23State : SpotGrid<char>
             .ToList();
     }
 
-    private List<(int row, int col)> GetAllNeighboursA((int row, int col) position)
+    private List<Point> GetAllNeighboursA(Point position)
     {
-        List<(int row, int col)> neighbours = new();
+        List<Point> neighbours = new();
         if (position.row > 0 && GetElement(position.row - 1, position.col) != '#' && GetElement(position.row - 1, position.col) != 'v')
             neighbours.Add((position.row - 1, position.col));
         if (position.row < Height - 1 && GetElement(position.row + 1, position.col) != '#' && GetElement(position.row + 1, position.col) != '^')
@@ -64,9 +64,9 @@ public class Day23State : SpotGrid<char>
             neighbours.Add((position.row, position.col + 1));
         return neighbours;
     }
-    private List<(int row, int col)> GetAllNeighboursB((int row, int col) position)
+    private List<Point> GetAllNeighboursB(Point position)
     {
-        List<(int row, int col)> neighbours = new();
+        List<Point> neighbours = new();
         if (position.row > 0 && GetElement(position.row - 1, position.col) != '#')
             neighbours.Add((position.row - 1, position.col));
         if (position.row < Height - 1 && GetElement(position.row + 1, position.col) != '#')

@@ -51,7 +51,7 @@ public class Day23 : Day
         List<string> lines = new FileUtils(input).GetLines();
 
         RectangleGrid<char> inputGrid = new(lines.Select(line => line.ToCharArray().ToList()).ToList(), '.');
-        (int row, int col) start = (0, lines[0].IndexOf('.'));
+        Point start = (0, lines[0].IndexOf('.'));
         Day23State startingState = new(start);
         for (int row = 0; row < inputGrid.Height; row++)
         {

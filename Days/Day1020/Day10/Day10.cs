@@ -9,7 +9,7 @@ public class Day10 : Day
         List<List<char>> inputChars = new FileUtils(input).GetLines()
             .Select(line => line.ToCharArray().ToList()).ToList();
 
-        (int row, int col) start = FindStart(new FileUtils(input).GetLines());
+        Point start = FindStart(new FileUtils(input).GetLines());
         PipeSystem pipeSystem = new PipeSystem(inputChars, start);
 
         return (pipeSystem.Segments.Count / 2).ToString();
@@ -20,7 +20,7 @@ public class Day10 : Day
         List<List<char>> inputChars = new FileUtils(input).GetLines()
             .Select(line => line.ToCharArray().ToList()).ToList();
 
-        (int row, int col) start = FindStart(new FileUtils(input).GetLines());
+        Point start = FindStart(new FileUtils(input).GetLines());
         PipeSystem pipeSystem = new PipeSystem(inputChars, start);
 
         Dictionary<int, List<int>> horizontalDictionary = new();
@@ -52,8 +52,8 @@ public class Day10 : Day
             }
         });
 
-        List<(int row, int col)> solvable = new();
-        List<(int row, int col)> insolvable = new();
+        List<Point> solvable = new();
+        List<Point> insolvable = new();
         for (int row = 0; row < pipeSystem.Height; row++)
         {
             if (pipeSystem.GetElement(row, 0) == '.')
@@ -112,11 +112,11 @@ public class Day10 : Day
 
                 if (barriers ==4)
                 {
-                    insolvable.Add((row, col));
+                    insolvable.Add(new Point(row, col));
                 }
                 else
                 {
-                    solvable.Add((row, col));
+                    solvable.Add(new Point(row, col));
                 }
 
             }
@@ -125,7 +125,7 @@ public class Day10 : Day
 
     }
 
-    public static (int row, int col) FindStart(List<string> lines)
+    public static Point FindStart(List<string> lines)
     {
         for (int i = 0; i < lines.Count; i++)
         {

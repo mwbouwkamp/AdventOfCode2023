@@ -2,7 +2,7 @@
 
 public class SpotGrid<T> : Grid<T>
 {
-    public Dictionary<(int row, int col), T> Positions { get; set; }
+    public Dictionary<Point, T> Positions { get; set; }
 
     public int Count { get { return Positions.Count; } }
 
@@ -14,12 +14,12 @@ public class SpotGrid<T> : Grid<T>
 
     public override T GetElement(int row, int col)
     {
-        return Positions.TryGetValue((row, col), out T value) ? value : defaultValue;
+        return Positions.TryGetValue(new Point(row, col), out T value) ? value : defaultValue;
     }
 
     public override void SetElement(int row, int col, T value)
     {
-        Positions[(row, col)] = value;
+        Positions[new Point(row, col)] = value;
         SetMinMaxValues(row, col);
     }
 
@@ -32,7 +32,7 @@ public class SpotGrid<T> : Grid<T>
 
         Positions.Keys.ToList().ForEach(key =>
         {
-            rows[(key.row - YMin) * (Width + 1) + (key.col - XMin)] = Positions[(key.row, key.col)].ToString().ToCharArray()[0];
+            rows[(key.row - YMin) * (Width + 1) + (key.col - XMin)] = Positions[new Point(key.row, key.col)].ToString().ToCharArray()[0];
         });
         return new string(rows);
     }

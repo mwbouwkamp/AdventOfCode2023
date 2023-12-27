@@ -65,7 +65,7 @@ public abstract class Grid<T>
             {
                 if (GetElement(row, col).Equals(element))
                 {
-                    return (row, col);
+                    return new Point(row, col);
                 }
             }
         }

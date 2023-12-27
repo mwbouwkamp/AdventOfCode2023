@@ -108,7 +108,7 @@ public class FileUtils
     /// </returns>
     public RectangleGrid<int> GetIntGrid(String delimiter = "")
     {
-        return new RectangleGrid<int>(Get2DList(delimiter, int.Parse), ' ');
+        return new RectangleGrid<int>(Get2DList(delimiter, int.Parse), -1);
     }
 
     /// <summary>Gets a list of lists of elmements.</summary>

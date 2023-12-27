@@ -8,7 +8,7 @@ public class Day18 : Day
     {
         List<string> lines = new FileUtils(input).GetLines();
         SpotGrid<string> grid = new("#000000");
-        (int row, int col) currentPosition = (0, 0);
+        Point currentPosition = (0, 0);
         grid.SetElement(currentPosition.row, currentPosition.col, "#70c710");
         lines.ForEach(line =>
         {

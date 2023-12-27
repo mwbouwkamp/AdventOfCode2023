@@ -23,6 +23,7 @@ public class DayExecuter
             "Day14" => new Day14(input),
             "Day15" => new Day15(input),
             "Day16" => new Day16(input),
+            "Day17" => new Day17(input),
             "Day18" => new Day18(input),
             "Day19" => new Day19(input),
             "Day20" => new Day20(input),
