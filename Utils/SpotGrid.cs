@@ -1,8 +1,10 @@
-﻿namespace AdventOfCode2023;
+﻿using static AdventOfCode2023.Day17;
+
+namespace AdventOfCode2023;
 
 public class SpotGrid<T> : Grid<T>
 {
-    public Dictionary<Point, T> Positions { get; set; }
+    public Dictionary<Position, T> Positions { get; set; }
 
     public int Count { get { return Positions.Count; } }
 
@@ -14,12 +16,20 @@ public class SpotGrid<T> : Grid<T>
 
     public override T GetElement(int row, int col)
     {
-        return Positions.TryGetValue(new Point(row, col), out T value) ? value : defaultValue;
+        return Positions.TryGetValue(new Position(row, col), out T value) ? value : defaultValue;
     }
 
     public override void SetElement(int row, int col, T value)
     {
-        Positions[new Point(row, col)] = value;
+        Position point = new(row, col);
+        if (Positions.Keys.Contains(point))
+        {
+            Positions[point] = value;
+        }
+        else
+        {
+            Positions.Add(point, value);
+        }
         SetMinMaxValues(row, col);
     }
 
@@ -32,7 +42,7 @@ public class SpotGrid<T> : Grid<T>
 
         Positions.Keys.ToList().ForEach(key =>
         {
-            rows[(key.row - YMin) * (Width + 1) + (key.col - XMin)] = Positions[new Point(key.row, key.col)].ToString().ToCharArray()[0];
+            rows[(key.row - YMin) * (Width + 1) + (key.col - XMin)] = Positions[new Position(key.row, key.col)].ToString().ToCharArray()[0];
         });
         return new string(rows);
     }

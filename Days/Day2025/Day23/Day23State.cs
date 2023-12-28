@@ -2,12 +2,12 @@
 
 public class Day23State : SpotGrid<char>
 {
-    public List<Point> Path { get; set; }
-    public Point Position { get; set; }
+    public List<Position> Path { get; set; }
+    public Position Position { get; set; }
     public int Heuristic { get; set; }
-    public Dictionary<Point, List<Point>> NeighboursDictionary;
+    public Dictionary<Position, List<Position>> NeighboursDictionary;
 
-    public Day23State(Point position) : base('.') 
+    public Day23State(Position position) : base('.') 
     {
         Path = new() { position };
         Position = position;
@@ -27,7 +27,7 @@ public class Day23State : SpotGrid<char>
             .ToDictionary(position => position, position => GetAllNeighboursB(position));
     }
 
-    public Day23State(Day23State previousState, Point position) : base('.')
+    public Day23State(Day23State previousState, Position position) : base('.')
     {
         Positions = previousState.Positions;
         Position = position;
@@ -43,7 +43,10 @@ public class Day23State : SpotGrid<char>
 
     public List<Day23State> GetChildren()
     {
-        List<Point> childPositions = NeighboursDictionary[Position];
+        List<Position> childPositions = NeighboursDictionary[Position];
+        //List<Point> childPositions = NeighboursDictionary[NeighboursDictionary.Keys
+        //    .First(key => key.row == Position.row && key.col == Position.col)];
+            
 
         return childPositions
             .Where(child => !Path.Any(position => position.row == child.row && position.col == child.col))
@@ -51,30 +54,30 @@ public class Day23State : SpotGrid<char>
             .ToList();
     }
 
-    private List<Point> GetAllNeighboursA(Point position)
+    private List<Position> GetAllNeighboursA(Position position)
     {
-        List<Point> neighbours = new();
+        List<Position> neighbours = new();
         if (position.row > 0 && GetElement(position.row - 1, position.col) != '#' && GetElement(position.row - 1, position.col) != 'v')
-            neighbours.Add((position.row - 1, position.col));
+            neighbours.Add(new(position.row - 1, position.col));
         if (position.row < Height - 1 && GetElement(position.row + 1, position.col) != '#' && GetElement(position.row + 1, position.col) != '^')
-            neighbours.Add((position.row + 1, position.col));
+            neighbours.Add(new(position.row + 1, position.col));
         if (position.col > 0 && GetElement(position.row, position.col - 1) != '#' && GetElement(position.row, position.col - 1) != '>')
-            neighbours.Add((position.row, position.col - 1));
+            neighbours.Add(new(position.row, position.col - 1));
         if (position.col < Width - 1 && GetElement(position.row, position.col + 1) != '#' && GetElement(position.row, position.col + 1) != '<')
-            neighbours.Add((position.row, position.col + 1));
+            neighbours.Add(new(position.row, position.col + 1));
         return neighbours;
     }
-    private List<Point> GetAllNeighboursB(Point position)
+    private List<Position> GetAllNeighboursB(Position position)
     {
-        List<Point> neighbours = new();
+        List<Position> neighbours = new();
         if (position.row > 0 && GetElement(position.row - 1, position.col) != '#')
-            neighbours.Add((position.row - 1, position.col));
+            neighbours.Add(new(position.row - 1, position.col));
         if (position.row < Height - 1 && GetElement(position.row + 1, position.col) != '#')
-            neighbours.Add((position.row + 1, position.col));
+            neighbours.Add(new(position.row + 1, position.col));
         if (position.col > 0 && GetElement(position.row, position.col - 1) != '#')
-            neighbours.Add((position.row, position.col - 1));
+            neighbours.Add(new(position.row, position.col - 1));
         if (position.col < Width - 1 && GetElement(position.row, position.col + 1) != '#')
-            neighbours.Add((position.row, position.col + 1));
+            neighbours.Add(new(position.row, position.col + 1));
         return neighbours;
     }
 }

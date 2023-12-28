@@ -8,7 +8,7 @@ public class PipeSystem : RectangleGrid<char>
 {
     public Segment Start { get; set; }
     public List<Segment> Segments { get; set; }
-    public PipeSystem(List<List<char>> grid, Point start) : base(grid, '.', true)
+    public PipeSystem(List<List<char>> grid, Position start) : base(grid, '.', true)
     {
         Start = new(start.row, start.col, 'S');
 

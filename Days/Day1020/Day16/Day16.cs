@@ -93,10 +93,10 @@ public class Day16 : Day
             }
             newDirections.ForEach(newDirection =>
             {
-                Point? newPosition = GetNewPosition(current, newDirection, tile, out bool isExit);
+                Position? newPosition = GetNewPosition(current, newDirection, tile, out bool isExit);
                 if (newPosition != null)
                 {
-                    State newState = new(newPosition.Value.row, newPosition.Value.col, newDirection);
+                    State newState = new(newPosition.row, newPosition.col, newDirection);
                     if (!energized.Where(state => state.ToString().Equals(newState.ToString())).Any())
                     {
                         fringe.Add(newState);
@@ -115,27 +115,27 @@ public class Day16 : Day
         return (energized, exits);
     }
 
-    private Point? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
+    private Position? GetNewPosition(State state, char direction, RectangleGrid<char> grid, out bool isExit)
     {
         if (direction == '>' && state.Col < grid.Width - 1)
         {
             isExit = false;
-            return (state.Row, state.Col + 1);
+            return new(state.Row, state.Col + 1);
         }
         if (direction == '<' && state.Col > 0)
         {
             isExit = false;
-            return (state.Row, state.Col - 1);
+            return new(state.Row, state.Col - 1);
         }
         if (direction == 'v' && state.Row < grid.Height - 1)
         {
             isExit = false;
-            return (state.Row + 1, state.Col);
+            return new(state.Row + 1, state.Col);
         }
         if (direction == '^' && state.Row > 0)
         {
             isExit = false;
-            return (state.Row - 1, state.Col);
+            return new(state.Row - 1, state.Col);
         }
         isExit = true;
         return null;

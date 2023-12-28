@@ -6,10 +6,10 @@ public class Day23 : Day
 
     public override string ExecuteA()
     {
-        return solve('a');
+        return Solve('a');
     }
 
-    private string solve(char dayPart)
+    private string Solve(char dayPart)
     {
         Day23State startingState = GetStartingState();
         if (dayPart == 'a')
@@ -51,7 +51,7 @@ public class Day23 : Day
         List<string> lines = new FileUtils(input).GetLines();
 
         RectangleGrid<char> inputGrid = new(lines.Select(line => line.ToCharArray().ToList()).ToList(), '.');
-        Point start = (0, lines[0].IndexOf('.'));
+        Position start = new(0, lines[0].IndexOf('.'));
         Day23State startingState = new(start);
         for (int row = 0; row < inputGrid.Height; row++)
         {
@@ -66,6 +66,6 @@ public class Day23 : Day
 
     public override string ExecuteB()
     {
-        return solve('b');
+        return Solve('b');
     }
 }

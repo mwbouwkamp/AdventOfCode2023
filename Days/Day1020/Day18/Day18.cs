@@ -8,7 +8,7 @@ public class Day18 : Day
     {
         List<string> lines = new FileUtils(input).GetLines();
         SpotGrid<string> grid = new("#000000");
-        Point currentPosition = (0, 0);
+        Position currentPosition = new(0, 0);
         grid.SetElement(currentPosition.row, currentPosition.col, "#70c710");
         lines.ForEach(line =>
         {
@@ -19,28 +19,28 @@ public class Day18 : Day
                 case "R":
                     for (int i = 0; i < int.Parse(parts[1]); i++)
                     {
-                        currentPosition = (currentPosition.row, currentPosition.col + 1);
+                        currentPosition = new(currentPosition.row, currentPosition.col + 1);
                         grid.SetElement(currentPosition.row, currentPosition.col, color);
                     }
                     break;
                 case "L":
                     for (int i = 0; i < int.Parse(parts[1]); i++)
                     {
-                        currentPosition = (currentPosition.row, currentPosition.col - 1);
+                        currentPosition = new(currentPosition.row, currentPosition.col - 1);
                         grid.SetElement(currentPosition.row, currentPosition.col, color);
                     }
                     break;
                 case "U":
                     for (int i = 0; i < int.Parse(parts[1]); i++)
                     {
-                        currentPosition = (currentPosition.row - 1, currentPosition.col);
+                        currentPosition = new(currentPosition.row - 1, currentPosition.col);
                         grid.SetElement(currentPosition.row, currentPosition.col, color);
                     }
                     break;
                 case "D":
                     for (int i = 0; i < int.Parse(parts[1]); i++)
                     {
-                        currentPosition = (currentPosition.row + 1, currentPosition.col);
+                        currentPosition = new(currentPosition.row + 1, currentPosition.col);
                         grid.SetElement(currentPosition.row, currentPosition.col, color);
                     }
                     break;

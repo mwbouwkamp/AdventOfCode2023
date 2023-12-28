@@ -57,7 +57,7 @@ public abstract class Grid<T>
     /// <param name="value">The value to set.</param>
     public abstract void SetElement(int row, int col, T value);
 
-    public (int col, int row) FindFirst(T element)
+    public Position FindFirst(T element)
     {
         for (int row = 0; row < Height; row++)
         {
@@ -65,10 +65,10 @@ public abstract class Grid<T>
             {
                 if (GetElement(row, col).Equals(element))
                 {
-                    return new Point(row, col);
+                    return new Position(row, col);
                 }
             }
         }
-        return (-1, -1);
+        return new(-1, -1);
     }
-}
+}   
