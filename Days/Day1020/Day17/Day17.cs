@@ -23,6 +23,7 @@ public class Day17 : Day
                 .First(key => fringe[key] == lowestHeuristic);
             fringe.Remove(current);
 
+            Console.WriteLine($"{current.HeatLoss} - {current.Position.row},{current.Position.col}");
 
             lowestSeen.TryAdd(current.Position, current.Heuristic);
             if (lowestSeen.ContainsKey(current.Position))
@@ -30,6 +31,9 @@ public class Day17 : Day
                 if (lowestSeen[current.Position] > current.HeatLoss)
                 {
                     lowestSeen[current.Position] = current.HeatLoss;
+                } else
+                {
+                    continue;
                 }
             }
             else
@@ -49,17 +53,15 @@ public class Day17 : Day
                 {
                     if (!lowestSeen.ContainsKey(child.Position))
                     {
-                        //lowestSeen.Add(child.Position, child.HeatLoss);
                         fringe.Add(child, child.Heuristic);
                     }
                     else if (child.HeatLoss < lowestSeen[child.Position])
                     {
-                        //lowestSeen[child.Position] = child.HeatLoss;
                         fringe.Add(child, child.Heuristic);
                     }
                 });
         }
-        //729 low
+        //729 low  not 737, 738
         return "Error";
     }
 

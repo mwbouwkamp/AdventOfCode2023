@@ -38,6 +38,11 @@ public class Position
         return $"{row},{col}".GetHashCode();
     }
 
+    public override string ToString()
+    {
+        return $"{row},{col}";
+    }
+
 }
 
 //public class PositionComparer : IEqualityComparer<Position>

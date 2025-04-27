@@ -10,6 +10,7 @@ public class Day17State
     public int HeatLoss { get; set; }
     private readonly int MaxInDirection = 3;
     List<Position> Path { get; set; }
+    private readonly int Threashold = 1739;
 
     public Day17State(RectangleGrid<int> grid, Position position, int direction, int previousInDirection, int heatLoss, List<Position> path)
     {
@@ -19,8 +20,9 @@ public class Day17State
         PreviousInDirection = previousInDirection;
         HeatLoss = heatLoss;
         Heuristic = (grid.Width - position.col) + (grid.Height - position.row) + heatLoss;
-        Path = new(path);
-        path.Add(Position);
+        Path = new();
+        Path.AddRange(path);
+        Path.Add(position);
     }
 
     public List<Day17State> GetChildren()
@@ -28,33 +30,48 @@ public class Day17State
         List<Day17State> childStates = new();
         if (PreviousInDirection < MaxInDirection)
         {
-            try
+            Position? straightAhead = GetRelative(Direction);
+            if (straightAhead != null)
             {
-                Position straightAhead = GetRelative(Direction);
-                childStates.Add(new(Grid, straightAhead, Direction, PreviousInDirection + 1, HeatLoss + Grid.GetElement(Position.row, Position.col), Path));
+                childStates.Add(new(Grid, straightAhead, Direction, PreviousInDirection + 1, HeatLoss + Grid.GetElement(Position.row, Position.col), new(Path)));
             }
-            catch { }
         }
 
-        try
-        {
-            int direction = ((Direction - 1) % 4 + 4) % 4;
-            Position leftTurn = GetRelative(direction);
-            childStates.Add(new(Grid, leftTurn, direction, 0, HeatLoss + Grid.GetElement(Position.row, Position.col), Path));
-        } catch { }
+        int direction = (Direction + 3) % 4;
 
-        try
+        Position? leftTurn = GetRelative(direction);
+        if (leftTurn != null)
         {
-            int direction = (Direction + 1) % 4;
-            Position rightTurn = GetRelative(direction);
-            childStates.Add(new(Grid, rightTurn, direction, 0, HeatLoss + Grid.GetElement(Position.row, Position.col), Path));
+            childStates.Add(new(Grid, leftTurn, direction, 0, HeatLoss + Grid.GetElement(Position.row, Position.col), new(Path)));
         }
-        catch { }
 
-        return childStates;
+        direction = (Direction + 1) % 4;
+        Position? rightTurn = GetRelative(direction);
+        if (rightTurn != null)
+        {
+            childStates.Add(new(Grid, rightTurn, direction, 0, HeatLoss + Grid.GetElement(Position.row, Position.col), new(Path)));
+        }
+
+        Console.WriteLine($"Current: {Position} ({Direction}). Children: {childStates.Aggregate("", (a, b) => $"{a} {b.Position} ({b.Direction})")}");
+        if (childStates.Select(child => child.Position).Where(position => Math.Abs(position.row - Position.row) > 1 || Math.Abs(position.col - Position.col) > 1).Any())
+        {
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+
+        return childStates
+            .Where(child => child.Heuristic < Threashold)
+            .Where(child => child.HasNoDoublesInPath())
+            .ToList();
     }
 
-    private Position GetRelative(int direction)
+    private bool HasNoDoublesInPath()
+    {
+        bool toReturn = Path
+            .Where(position => position.Equals(Position)).ToList().Count < 2;
+        return toReturn;
+    }
+
+    private Position? GetRelative(int direction)
     {
         switch (direction)
         {
@@ -77,11 +94,11 @@ public class Day17State
             default:
                 throw new ArgumentException($"Illegal direction: {direction}");
         }
-        throw new ArgumentException($"Illegal direction: {direction}");
+        return null;
     }
 
     public void PrintPaths()
     {
-        Path.ForEach(point => Console.WriteLine($"{point.row},{point.col}"));
+        Path.ForEach(position => Console.WriteLine($"{position.row},{position.col}"));
     }
 }
